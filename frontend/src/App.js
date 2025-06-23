@@ -101,6 +101,12 @@ function App() {
             <li key={expense.id}>
               💸 <strong>{expense.title}</strong> — ₹{expense.amount} on{" "}
               {expense.expense_date} ({expense.category})
+              <button
+                onClick={() => handleDelete(expense.id)}
+                style={{ marginLeft: "1rem", color: "red" }}
+              >
+                🗑️
+              </button>
             </li>
           ))}
         </ul>
