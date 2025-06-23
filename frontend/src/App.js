@@ -59,24 +59,39 @@ function App() {
       .catch(() => alert("Failed to add expense"));
     
   };
-const handleDelete = (id) => {
-  if (!window.confirm("Are you sure you want to delete this expense?")) return;
+  const handleDelete = (id) => {
+    if (!window.confirm("Are you sure you want to delete this expense?")) return;
 
-  fetch("http://localhost/college-expense-tracker/backend/deleteExpense.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      alert(data.message || "Deleted");
-      fetchExpenses(); // refresh the list
+    fetch("http://localhost/college-expense-tracker/backend/deleteExpense.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
     })
-    .catch((err) => {
-      console.error("Delete error:", err);
-      alert("Failed to delete");
-    });
-};
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message || "Deleted");
+        fetchExpenses(); // refresh the list
+      })
+      .catch((err) => {
+        console.error("Delete error:", err);
+        alert("Failed to delete");
+      });
+  };
+  const totalSpent = expenses
+    .reduce((sum, e) => sum + parseFloat(e.amount), 0)
+    .toFixed(2);
+
+  const filteredExpenses = expenses.filter((expense) => {
+    return (
+      (!categoryFilter || expense.category === categoryFilter) &&
+      (!dateFilter || expense.expense_date === dateFilter)
+    );
+  });
+
+  const filteredTotal = filteredExpenses
+    .reduce((sum, e) => sum + parseFloat(e.amount), 0)
+    .toFixed(2);
+
   return (
     <div style={{ padding: "2rem" }}>
       <h1>📊 College Expense Tracker</h1>
@@ -111,7 +126,6 @@ const handleDelete = (id) => {
         />
         <button type="submit">Add Expense</button>
       </form>
-
       <div style={{ margin: "20px 0" }}>
         <label>
           Category:
@@ -139,6 +153,8 @@ const handleDelete = (id) => {
         </label>
       </div>
 
+      <h2>🧾 Total Spent: ₹{totalSpent}</h2>
+      <h3>🔍 Filtered Total: ₹{filteredTotal}</h3>
 
       {/* Expense List */}
       {loading ? (
