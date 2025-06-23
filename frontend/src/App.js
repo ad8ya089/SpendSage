@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 function App() {
   const [expenses, setExpenses] = useState([]);
+  const total = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0).toFixed(2);
   const [loading, setLoading] = useState(true);
 
   // New: Form state
