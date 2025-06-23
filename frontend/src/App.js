@@ -53,6 +53,25 @@ function App() {
       fetchExpenses();
     })
     .catch(() => alert("Failed to add expense"));
+  const handleDelete = (id) => {
+    if (!window.confirm("Are you sure you want to delete this expense?")) return;
+
+    fetch("http://localhost/college-expense-tracker/backend/deleteExpense.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message || "Deleted");
+        fetchExpenses();
+      })
+      .catch((err) => {
+        console.error("Delete error:", err);
+        alert("Failed to delete");
+      });
+  };
+
 };
 
 
