@@ -79,6 +79,7 @@ const handleDelete = (id) => {
       <h1>📊 College Expense Tracker</h1>
 
       {/* Form */}
+      <h2>🧾 Total Spent: ₹{total}</h2>
       <form onSubmit={handleSubmit} style={{ marginBottom: "2rem" }}>
         <input
           placeholder="Title"
