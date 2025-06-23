@@ -27,6 +27,12 @@ if ($conn->connect_error) {
 
 $data = json_decode(file_get_contents("php://input"), true);
 
+$user_id = $data['user_id'] ?? null;
+$title = $conn->real_escape_string($data['title']);
+$amount = (float)$data['amount'];
+$category = $conn->real_escape_string($data['category']);
+$expense_date = $conn->real_escape_string($data['expense_date']);
+
 // Validate input
 if (
     !isset($data['title'], $data['amount'], $data['category'], $data['expense_date']) ||
@@ -46,8 +52,8 @@ $amount = (float)$data['amount'];
 $category = $conn->real_escape_string($data['category']);
 $expense_date = $conn->real_escape_string($data['expense_date']);
 
-$sql = "INSERT INTO expenses (title, amount, category, expense_date)
-        VALUES ('$title', $amount, '$category', '$expense_date')";
+$sql = "INSERT INTO expenses (title, amount, category, expense_date, user_id)
+        VALUES ('$title', $amount, '$category', '$expense_date', $user_id)";
 
 if ($conn->query($sql)) {
     echo json_encode(["message" => "Expense added successfully"]);

@@ -11,8 +11,18 @@ if ($conn->connect_error) {
     exit;
 }
 
-$sql = "SELECT * FROM expenses ORDER BY expense_date DESC";
+$data = json_decode(file_get_contents("php://input"), true);
+$user_id = $data['user_id'] ?? null;
+
+if (!$user_id) {
+    http_response_code(400);
+    echo json_encode(["error" => "Missing user_id"]);
+    exit;
+}
+
+$sql = "SELECT * FROM expenses WHERE user_id = $user_id ORDER BY expense_date DESC";
 $result = $conn->query($sql);
+
 
 $expenses = [];
 
