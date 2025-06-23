@@ -12,6 +12,9 @@ function App() {
     category: "",
     expense_date: "",
   });
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
 
   // Fetch expenses
   const fetchExpenses = () => {
@@ -109,6 +112,34 @@ const handleDelete = (id) => {
         <button type="submit">Add Expense</button>
       </form>
 
+      <div style={{ margin: "20px 0" }}>
+        <label>
+          Category:
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            style={{ marginLeft: "10px" }}
+          >
+            <option value="">All</option>
+            <option value="Food">Food</option>
+            <option value="Travel">Travel</option>
+            <option value="Books">Books</option>
+            <option value="Shopping">Shopping</option>
+          </select>
+        </label>
+
+        <label style={{ marginLeft: "30px" }}>
+          Date:
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            style={{ marginLeft: "10px" }}
+          />
+        </label>
+      </div>
+
+
       {/* Expense List */}
       {loading ? (
         <p>Loading...</p>
@@ -116,17 +147,24 @@ const handleDelete = (id) => {
         <p>No expenses yet.</p>
       ) : (
         <ul>
-          {expenses.map((expense) => (
-            <li key={expense.id}>
-              💸 <strong>{expense.title}</strong> — ₹{expense.amount} on{" "}
-              {expense.expense_date} ({expense.category})
-              <button
-                onClick={() => handleDelete(expense.id)}
-                style={{ marginLeft: "1rem", color: "red" }}
-              >
-                🗑️
-              </button>
-            </li>
+          {expenses
+            .filter((expense) => {
+              return (
+                (!categoryFilter || expense.category === categoryFilter) &&
+                (!dateFilter || expense.expense_date === dateFilter)
+              );
+            })
+            .map((expense) => (
+              <li key={expense.id}>
+                💸 <strong>{expense.title}</strong> — ₹{expense.amount} on{" "}
+                {expense.expense_date} ({expense.category})
+                <button
+                  onClick={() => handleDelete(expense.id)}
+                  style={{ marginLeft: "1rem", color: "red" }}
+                >
+                  🗑️
+                </button>
+              </li>
           ))}
         </ul>
       )}
