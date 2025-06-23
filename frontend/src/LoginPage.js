@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { /*useNavigate,*/ Link } from "react-router-dom";
+import { TextField, Button, Typography, Paper, Box } from "@mui/material";
 
 function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,7 +22,7 @@ function LoginPage() {
         if (data.user_id) {
           localStorage.setItem("userId", data.user_id);
           localStorage.setItem("userName", data.name);
-          navigate("/");
+          window.location.href = "/";  // force a reload so App.js re-evaluates    
         } else {
           alert(data.error || "Login failed");
         }
@@ -29,80 +30,42 @@ function LoginPage() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>🔐 Login to Expense Tracker</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          name="email"
-          placeholder="Email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          style={styles.input}
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          style={styles.input}
-          required
-        />
-        <button type="submit" style={styles.button}>Login</button>
-      </form>
-      <p style={styles.linkText}>
-        Don’t have an account?{" "}
-        <Link to="/register" style={styles.link}>Register here</Link>
-      </p>
-    </div>
+    <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#f0f2f5">
+      <Paper elevation={3} style={{ padding: "2rem", width: "350px" }}>
+        <Typography variant="h5" gutterBottom align="center">
+          🔐 Login to Expense Tracker
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Email"
+            name="email"
+            fullWidth
+            margin="normal"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            fullWidth
+            margin="normal"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+            Login
+          </Button>
+        </form>
+        <Typography align="center" variant="body2" sx={{ mt: 2 }}>
+          Don’t have an account?{" "}
+          <Link to="/register" style={{ color: "#1976d2", textDecoration: "none" }}>Register</Link>
+        </Typography>
+      </Paper>
+    </Box>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: "400px",
-    margin: "4rem auto",
-    padding: "2rem",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    fontFamily: "sans-serif",
-    backgroundColor: "#fff"
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: "2rem"
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem"
-  },
-  input: {
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "5px",
-    border: "1px solid #ccc"
-  },
-  button: {
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "5px",
-    backgroundColor: "#4CAF50",
-    color: "white",
-    border: "none",
-    cursor: "pointer"
-  },
-  linkText: {
-    marginTop: "1rem",
-    textAlign: "center"
-  },
-  link: {
-    color: "#007bff",
-    textDecoration: "none"
-  }
-};
 
 export default LoginPage;
