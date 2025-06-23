@@ -1,4 +1,14 @@
 <?php
+// CORS preflight support
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: POST, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type");
+    http_response_code(200);
+    exit();
+}
+
+// Actual request headers
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -43,8 +53,9 @@ if ($conn->query($sql)) {
     echo json_encode(["message" => "Expense added successfully"]);
 } else {
     http_response_code(500);
-    echo json_encode(["error" => "Failed to add expense"]);
+    echo json_encode(["error" => "Failed to add expense: " . $conn->error]);
 }
+
 
 $conn->close();
 ?>
