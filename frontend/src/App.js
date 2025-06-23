@@ -28,21 +28,33 @@ function App() {
 
   // Handle form submit
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    fetch("http://localhost/college-expense-tracker/backend/addExpense.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+  // Basic input validation
+  if (
+    !form.title.trim() ||
+    !form.amount ||
+    !form.category.trim() ||
+    !form.expense_date
+  ) {
+    alert("Please fill in all fields correctly.");
+    return;
+  }
+
+  fetch("http://localhost/college-expense-tracker/backend/addExpense.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(form),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      alert(data.message || "Added");
+      setForm({ title: "", amount: "", category: "", expense_date: "" });
+      fetchExpenses();
     })
-      .then((res) => res.json())
-      .then((data) => {
-        alert(data.message || "Added");
-        setForm({ title: "", amount: "", category: "", expense_date: "" });
-        fetchExpenses(); // reload
-      })
-      .catch(() => alert("Failed to add expense"));
-  };
+    .catch(() => alert("Failed to add expense"));
+};
+
 
   return (
     <div style={{ padding: "2rem" }}>
