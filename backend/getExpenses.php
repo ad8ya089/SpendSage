@@ -1,4 +1,6 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
 
 // DB connection
 $conn = new mysqli("localhost", "root", "", "expense_tracker");
