@@ -1,23 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
 
 function App() {
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost/college-expense-tracker/backend/getExpenses.php")
+      .then((res) => res.json())
+      .then((data) => {
+        setExpenses(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch expenses:", err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ padding: "2rem" }}>
+      <h1>📊 College Expense Tracker</h1>
+      {loading ? (
+        <p>Loading expenses...</p>
+      ) : expenses.length === 0 ? (
+        <p>No expenses found.</p>
+      ) : (
+        <ul>
+          {expenses.map((expense) => (
+            <li key={expense.id}>
+              💸 <strong>{expense.title}</strong> — ₹{expense.amount} on {expense.expense_date}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
