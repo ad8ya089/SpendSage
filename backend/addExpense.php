@@ -4,6 +4,9 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $conn = new mysqli("localhost", "root", "", "expense_tracker");
 
 if ($conn->connect_error) {
@@ -13,6 +16,20 @@ if ($conn->connect_error) {
 }
 
 $data = json_decode(file_get_contents("php://input"), true);
+
+// Validate input
+if (
+    !isset($data['title'], $data['amount'], $data['category'], $data['expense_date']) ||
+    empty(trim($data['title'])) ||
+    empty(trim($data['category'])) ||
+    !is_numeric($data['amount']) ||
+    $data['amount'] <= 0 ||
+    empty($data['expense_date'])
+) {
+    http_response_code(400);
+    echo json_encode(["error" => "Invalid input"]);
+    exit;
+}
 
 $title = $conn->real_escape_string($data['title']);
 $amount = (float)$data['amount'];
