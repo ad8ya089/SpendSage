@@ -28,53 +28,51 @@ function App() {
 
   // Handle form submit
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Basic input validation
-  if (
-    !form.title.trim() ||
-    !form.amount ||
-    !form.category.trim() ||
-    !form.expense_date
-  ) {
-    alert("Please fill in all fields correctly.");
-    return;
-  }
+    // Basic input validation
+    if (
+      !form.title.trim() ||
+      !form.amount ||
+      !form.category.trim() ||
+      !form.expense_date
+    ) {
+      alert("Please fill in all fields correctly.");
+      return;
+    }
 
-  fetch("http://localhost/college-expense-tracker/backend/addExpense.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(form),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      alert(data.message || "Added");
-      setForm({ title: "", amount: "", category: "", expense_date: "" });
-      fetchExpenses();
-    })
-    .catch(() => alert("Failed to add expense"));
-  const handleDelete = (id) => {
-    if (!window.confirm("Are you sure you want to delete this expense?")) return;
-
-    fetch("http://localhost/college-expense-tracker/backend/deleteExpense.php", {
+    fetch("http://localhost/college-expense-tracker/backend/addExpense.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify(form),
     })
       .then((res) => res.json())
       .then((data) => {
-        alert(data.message || "Deleted");
+        alert(data.message || "Added");
+        setForm({ title: "", amount: "", category: "", expense_date: "" });
         fetchExpenses();
       })
-      .catch((err) => {
-        console.error("Delete error:", err);
-        alert("Failed to delete");
-      });
+      .catch(() => alert("Failed to add expense"));
+    
   };
+const handleDelete = (id) => {
+  if (!window.confirm("Are you sure you want to delete this expense?")) return;
 
+  fetch("http://localhost/college-expense-tracker/backend/deleteExpense.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      alert(data.message || "Deleted");
+      fetchExpenses(); // refresh the list
+    })
+    .catch((err) => {
+      console.error("Delete error:", err);
+      alert("Failed to delete");
+    });
 };
-
-
   return (
     <div style={{ padding: "2rem" }}>
       <h1>📊 College Expense Tracker</h1>
