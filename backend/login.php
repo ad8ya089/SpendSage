@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $conn = new mysqli("localhost", "root", "", "expense_tracker");
+
 if ($conn->connect_error) {
   http_response_code(500);
   echo json_encode(["error" => "DB connection failed"]);
