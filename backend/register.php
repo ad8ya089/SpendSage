@@ -9,19 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   exit();
 }
 
-// Debug: Show raw input (remove later)
 $raw = file_get_contents("php://input");
-
-if (empty($raw)) {
-  http_response_code(400);
-  echo json_encode(["error" => "No data received", "raw" => $raw]);
-  exit();
-}
-
 $data = json_decode($raw, true);
+
 if (!is_array($data)) {
   http_response_code(400);
-  echo json_encode(["error" => "Invalid JSON received", "raw" => $raw]);
+  echo json_encode(["error" => "Invalid data"]);
   exit();
 }
 
@@ -42,11 +35,27 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 $conn = new mysqli("localhost", "root", "", "expense_tracker");
+
 if ($conn->connect_error) {
   http_response_code(500);
-  echo json_encode(["error" => "DB connection failed"]);
-  exit;
+  echo json_encode(["error" => "Database connection failed"]);
+  exit();
 }
+
+// Check if email already exists
+$check = $conn->prepare("SELECT id FROM users WHERE email = ?");
+$check->bind_param("s", $email);
+$check->execute();
+$check->store_result();
+
+if ($check->num_rows > 0) {
+  http_response_code(409);
+  echo json_encode(["error" => "Email is already registered. Please log in."]);
+  $check->close();
+  $conn->close();
+  exit();
+}
+$check->close();
 
 $hashed = password_hash($password, PASSWORD_DEFAULT);
 $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
@@ -55,15 +64,9 @@ $stmt->bind_param("sss", $name, $email, $hashed);
 if ($stmt->execute()) {
   echo json_encode(["success" => true, "message" => "Registered successfully"]);
 } else {
-  // Duplicate entry error code is 1062
-  if ($stmt->errno == 1062) {
-    http_response_code(409);
-    echo json_encode(["error" => "Email is already registered. Please log in."]);
-  } else {
-    http_response_code(500);
-    echo json_encode(["error" => "Database error: " . $stmt->error]);
-  }
+  http_response_code(500);
+  echo json_encode(["error" => "Database error: " . $stmt->error]);
 }
 
+$stmt->close();
 $conn->close();
-?>

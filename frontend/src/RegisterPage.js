@@ -18,36 +18,30 @@ function RegisterPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Sending to backend:", JSON.stringify(form));
-    fetch("http://127.0.0.1/college-expense-tracker/backend/register.php", {
+
+    fetch("http://localhost/college-expense-tracker/backend/register.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     })
-    .then((data) => {
+      .then((res) => res.json()) // <- parse response first
+      .then((data) => {
         if (data.success) {
-            alert("Registered! Please log in.");
-            navigate("/login");
+          alert("Registered! Please log in.");
+          navigate("/login");
         } else if (data.error === "Email is already registered. Please log in.") {
-            alert("Email already exists. Redirecting to login...");
-            navigate("/login");
+          alert("Email already exists. Redirecting to login...");
+          navigate("/login");
         } else {
-            alert(data.error || "Registration failed");
+          alert(data.error || "Registration failed");
         }
-        })
-    .then((res) => res.json())
-    .then((data) => {
-    if (data.success) {
-        alert("Registered! Please log in.");
-        navigate("/login");
-    } else {
-        alert(data.error || "Registration failed");
-    }
-    })
-    .catch((err) => {
-    console.error("FETCH ERROR:", err);
+      })
+      .catch((err) => {
+        console.error("FETCH ERROR:", err);
         alert("Something went wrong. Try again.");
-    });
-    };
+      });
+  };
+
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="#f0f2f5">
